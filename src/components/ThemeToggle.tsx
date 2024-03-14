@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaMoon } from "react-icons/fa";
+import { RiMoonClearLine } from "react-icons/ri";
 import { BsSunFill } from "react-icons/bs";
 
 const ThemeToggle = () => {
@@ -26,9 +26,19 @@ const ThemeToggle = () => {
   }, [darkMode]);
 
   return (
-  <div className="cursor-pointer" onClick={() => setDarkMode(!darkMode)}>
-    {darkMode ? <FaMoon className="text-white" size={20} /> : <BsSunFill className="text-yellow-500" size={20} />}
-  </div>
+    <div className="cursor-pointer" onClick={() => setDarkMode(!darkMode)}>
+      {darkMode ? (
+        <div className="flex gap-2 ">
+          <RiMoonClearLine className="text-darkSecondary" size={18} />{" "}
+          <h4 className="font-semibold text-sm">Dark Mode</h4>
+        </div>
+      ) : (
+        <div className="flex gap-2 ">
+          <BsSunFill className="text-darkSecondary" size={18} />{" "}
+          <h4 className="font-semibold text-sm">Light Mode</h4>
+        </div>
+      )}
+    </div>
   );
 };
 
