@@ -69,6 +69,6 @@ Deployed using Vercel:
 
 ![Uptick](./uptick-movie-app/src/images/sc_uptick.png)
 
-More of the project found in the [uptick-movie-app](./uptick-movie-app) folder.
+More of the project is found in the [uptick-movie-app](./uptick-movie-app) folder.
 
 ### *Thank you for reading*
