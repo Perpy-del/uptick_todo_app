@@ -1,21 +1,22 @@
 import ThemeToggle from "./components/ThemeToggle";
 
 import { ChangeEvent, useEffect, useState, useRef } from "react";
-import { format } from "date-fns"
- 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
+import { format } from "date-fns";
+import { FaCalendarAlt } from "react-icons/fa";
+
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 
 function App() {
   const [timeOfDay, setTimeOfDay] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
-  const [date, setDate] = useState<Date>()
+  const [date, setDate] = useState<Date>();
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleNameChange(e: ChangeEvent<HTMLInputElement>) {
@@ -71,14 +72,16 @@ function App() {
 
       {/* Add New Task */}
       <form>
-        <h3 className="font-bold pb-3 text-[#888]">What do you have planned?</h3>
+        <h3 className="font-bold pb-3 text-[#888]">
+          What do you have planned?
+        </h3>
         <div className="flex sm:flex-col md:flex-row gap-10">
           <label className="text-xl sm:w-full md:w-[70%]">
             <h3 className="pb-2">Title:</h3>
             <input
               type="text"
               placeholder="e.g. Submit TODO Task"
-              className="block title shadow-xl dark:shadow-none"
+              className="block dark:border dark:border-input dark:bg-background dark:hover:bg-accent dark:hover:text-accent-foreground description shadow-xl dark:shadow-none"
             />
           </label>
           <label className="text-xl w-full">
@@ -86,16 +89,33 @@ function App() {
             <input
               type="text"
               placeholder="e.g.Description of TOFO task"
-              className="block description shadow-xl dark:shadow-none"
+              className="block dark:border dark:border-input dark:bg-background dark:hover:bg-accent dark:hover:text-accent-foreground description shadow-xl dark:shadow-none"
             />
           </label>
-          <label className="text-xl w-full">
+          <label className="text-xl">
             <h3 className="pb-2">Date:</h3>
-            <input
-              type="text"
-              placeholder="e.g.Description of TOFO task"
-              className="block description"
-            />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-[240px] justify-start text-left font-normal text-xl h-[3.75rem]",
+                  !date && "text-muted-foreground",
+                )}
+              >
+                <FaCalendarAlt className="mr-2 h-4 w-4" />
+                {date ? format(date, "PPP") : <span>Pick a date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
           </label>
         </div>
       </form>
