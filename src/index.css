@@ -74,3 +74,25 @@
     @apply bg-background text-foreground;
   }
 }
+
+.welcome {
+  appearance: none;
+  border: none;
+  outline: none;
+  background: none;
+  cursor: initial;
+  width: 30%;
+}
+
+.welcome::placeholder {
+  color: #888;
+}
+
+.title, .description {
+  border-radius: 5px;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  color: rgb(29, 28, 28);
+  appearance: none;
+  outline: none;
+}

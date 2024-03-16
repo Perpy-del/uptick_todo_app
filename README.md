@@ -59,6 +59,7 @@ Vue.js).
 ### Technologies Used:
 -   [React with Vite](https://vitejs.dev/guide/) - React is a library that is used to build websites based on Reusable Components. Vite is a build tool that aims to provide a faster and leaner development experience for web projects.
 -   [TailwindCSS](https://tailwindcss.com/) - A utility-first CSS framework packed with classes that can be composed to build any design, directly in your markup.
+-   [Shadcn](https://ui.shadcn.com/docs/installation) - Beautifully designed reusable components that you can copy and paste into your application.
 
 ### Demo:
 

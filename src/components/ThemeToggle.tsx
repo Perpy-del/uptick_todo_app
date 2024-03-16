@@ -28,14 +28,15 @@ const ThemeToggle = () => {
   return (
     <div className="cursor-pointer" onClick={() => setDarkMode(!darkMode)}>
       {darkMode ? (
+        
+        <div className="flex gap-2 ">
+        <BsSunFill className="text-darkSecondary" size={18} />{" "}
+        <h4 className="font-semibold text-sm">Light Mode</h4>
+      </div>
+      ) : (
         <div className="flex gap-2 ">
           <RiMoonClearLine className="text-darkSecondary" size={18} />{" "}
           <h4 className="font-semibold text-sm">Dark Mode</h4>
-        </div>
-      ) : (
-        <div className="flex gap-2 ">
-          <BsSunFill className="text-darkSecondary" size={18} />{" "}
-          <h4 className="font-semibold text-sm">Light Mode</h4>
         </div>
       )}
     </div>
