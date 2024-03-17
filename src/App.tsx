@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import ThemeToggle from "./components/ThemeToggle";
 
-import { ChangeEvent, useEffect, useState, useRef } from "react";
+import { ChangeEvent, useEffect, useState, useRef, useCallback } from "react";
 import { format } from "date-fns";
 import { FaCalendarAlt } from "react-icons/fa";
 import { CiEdit } from "react-icons/ci";
 import { MdDeleteForever } from "react-icons/md";
 
-import { cn } from "@/lib/utils";
+import { cn, handleAddTodoDatabase, handleUpdateTodoDatabase } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -33,13 +33,13 @@ function App() {
   const [title, setTitle] = useState<string>("");
   const [desc, setDesc] = useState<string>("");
   const [date, setDate] = useState<Date>();
-  const [completed, setCompleted] = useState<boolean>(false);
+  const [checkedItem, setCheckedItem] = useState<string | null>(null);
   const [allTodosData, setAllTodosData] = useState<Array<TodoInterface>>([]);
   const [completedTodos, setCompletedTodos] = useState<Array<TodoInterface>>(
     [],
   );
   const [pendingTodos, setPendingTodos] = useState<Array<TodoInterface>>([]);
-  const [selectedTodo, setSelectedTodo] = useState({});
+  // const [selectedTodo, setSelectedTodo] = useState({});
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -54,7 +54,7 @@ function App() {
   }
 
   function getAllTodos() {
-    const dbPromise = indexedDB.open("todoDatabase", 2);
+    const dbPromise = indexedDB.open("todoListDatabase", 2);
 
     dbPromise.onsuccess = () => {
       const db = dbPromise.result;
@@ -66,7 +66,7 @@ function App() {
       const todos = todoList.getAll();
 
       todos.onsuccess = (query) => {
-        setAllTodosData(query?.target?.result);
+        setAllTodosData((query?.target as IDBRequest).result);
       };
 
       todos.onerror = () => {
@@ -78,7 +78,6 @@ function App() {
         setTitle("");
         setDesc("");
         setDate(undefined);
-        setCompleted(false);
       };
     };
   }
@@ -86,60 +85,31 @@ function App() {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     console.log({ title, desc, date });
-    const dbPromise = indexedDB.open("todoDatabase", 2);
-
-    if (title && desc && date) {
-      dbPromise.onsuccess = () => {
-        const db = dbPromise.result;
-
-        const transaction = db.transaction("todoList", "readwrite");
-
-        const todoList = transaction.objectStore("todoList");
-
-        const todos = todoList.put({
-          id: uuid(),
-          title,
-          description: desc,
-          date,
-          completed,
-        });
-
-        todos.onsuccess = () => {
-          transaction.oncomplete = () => {
-            db.close();
-          };
-          getAllTodos();
-          alert("Task added successfully!");
-        };
-
-        todos.onerror = (e) => {
-          console.log(e);
-          alert("Error adding task!");
-        };
-      };
-    }
+    handleAddTodoDatabase({
+      title,
+      desc,
+      date,
+      completed: false,
+      getAllTodos,
+      id: uuid(),
+    });
   }
 
-  function handleCheckedTodos(
-    e: React.ChangeEvent<HTMLInputElement>,
-    t: TodoInterface,
-  ) {
-    const updatedTodos = allTodosData.map((todo) =>
-      todo.id === t.id ? { ...todo, completed: e.target.checked } : todo,
-    );
-    const completed = updatedTodos.filter((todo) => todo.completed);
-    const pending = updatedTodos.filter((todo) => !todo.completed);
-    setAllTodosData(updatedTodos);
-    setCompletedTodos(completed);
-    setPendingTodos(pending);
+  function handleCheckedTodos(id: string) {
+    setCheckedItem(id);
+
+    handleUpdateTodoDatabase(id);
   }
 
-  function handleEditTodo(t: TodoInterface) {
-    setSelectedTodo(t);
-    setTitle(t.title);
-    setDesc(t.description);
-    setDate(t.date);
-  }
+  const completed = useCallback(() => {
+    const completedTasks = allTodosData.filter(todo => todo.completed)
+    setCompletedTodos(completedTasks);
+  }, [allTodosData]);
+
+  const pending = useCallback(() => {
+    const pendingTasks = allTodosData.filter(todo => !todo.completed)
+    setPendingTodos(pendingTasks);
+  }, [allTodosData]);
 
   useEffect(() => {
     createTodoCollection();
@@ -147,7 +117,9 @@ function App() {
 
   useEffect(() => {
     getAllTodos();
-  }, []);
+    pending();
+    completed();
+  }, [completed, pending]);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -261,8 +233,8 @@ function App() {
         <Tabs defaultValue="all" className="w-full">
           <TabsList>
             <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="pending">Pending</TabsTrigger>
-            <TabsTrigger value="completed">Completed</TabsTrigger>
+            <TabsTrigger value="pending" onClick={completed}>Pending</TabsTrigger>
+            <TabsTrigger value="completed" onClick={pending}>Completed</TabsTrigger>
           </TabsList>
           <div className="grid grid-cols-7 gap-3 align-start grid-flow-col my-5 font-semibold text-lg">
             <h3>Done</h3>
@@ -282,8 +254,8 @@ function App() {
                     <label className="col-span-1">
                       <input
                         type="checkbox"
-                        checked={t?.completed}
-                        onChange={(e) => handleCheckedTodos(e, t)}
+                        checked={checkedItem === t?.id}
+                        onChange={() => handleCheckedTodos(t?.id)}
                       />
                     </label>
                     <h3
@@ -301,19 +273,25 @@ function App() {
                     >
                       {t?.date?.toLocaleString().split(",")[0]}
                     </h3>
-                    <div className="flex items-center">
-                      <Button className="min-w-fit bg-transparent text-green-500 font-bold">
-                        <CiEdit size={30} />
-                      </Button>
-                      <Button className="min-w-fit bg-transparent text-red-500 font-bold">
-                        <MdDeleteForever size={25} />
-                      </Button>
-                    </div>
+                    {t?.completed ? (
+                      <p>Task Completed</p>
+                    ) : (
+                      <div className="flex items-center">
+                        <Button className="min-w-fit bg-transparent text-green-500 font-bold">
+                          <CiEdit size={30} />
+                        </Button>
+                        <Button className="min-w-fit bg-transparent text-red-500 font-bold">
+                          <MdDeleteForever size={25} />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 );
               })
             ) : (
-              <p>No Todos Created Yet</p>
+              <p className="text-center mt-16 font-bold text-3xl text-red-500">
+                🤷‍♀️ No Todos Created Yet
+              </p>
             )}
           </TabsContent>
           <TabsContent value="pending">
@@ -328,7 +306,7 @@ function App() {
                       <input
                         type="checkbox"
                         checked={t?.completed}
-                        onChange={(e) => handleCheckedTodos(e, t)}
+                        onChange={() => handleCheckedTodos(t?.id)}
                       />
                     </label>
                     <h3
@@ -358,7 +336,9 @@ function App() {
                 );
               })
             ) : (
-              <p>No Todos Created Yet</p>
+              <p className="text-center mt-16 font-bold text-3xl text-red-500">
+                🤷‍♀️ No Todos Created Yet
+              </p>
             )}
           </TabsContent>
           <TabsContent value="completed">
@@ -373,7 +353,7 @@ function App() {
                       <input
                         type="checkbox"
                         checked={t?.completed}
-                        onChange={(e) => handleCheckedTodos(e, t)}
+                        onChange={() => handleCheckedTodos(t?.id)}
                       />
                     </label>
                     <h3
@@ -391,19 +371,14 @@ function App() {
                     >
                       {t?.date?.toLocaleString().split(",")[0]}
                     </h3>
-                    <div className="flex items-center">
-                      <Button className="min-w-fit bg-transparent text-green-500 font-bold">
-                        <CiEdit size={30} />
-                      </Button>
-                      <Button className="min-w-fit bg-transparent text-red-500 font-bold">
-                        <MdDeleteForever size={25} />
-                      </Button>
-                    </div>
+                    <p>Task Completed</p>
                   </div>
                 );
               })
             ) : (
-              <p>No Todos Created Yet</p>
+              <p className="text-center mt-16 font-bold text-3xl text-red-500">
+                🤷‍♀️ No Todos Created Yet
+              </p>
             )}
           </TabsContent>
         </Tabs>
