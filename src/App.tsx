@@ -19,6 +19,14 @@ import { createTodoCollection } from "./lib/db";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { v4 as uuid } from "uuid";
 
+interface TodoInterface {
+  id: string;
+  title: string;
+  description: string;
+  date: Date;
+  completed: boolean;
+}
+
 function App() {
   const [timeOfDay, setTimeOfDay] = useState<string>("");
   const [userName, setUserName] = useState<string>("");
@@ -26,7 +34,13 @@ function App() {
   const [desc, setDesc] = useState<string>("");
   const [date, setDate] = useState<Date>();
   const [completed, setCompleted] = useState<boolean>(false);
-  const [allTodosData, setAllTodosData] = useState<Array<any>>([]);
+  const [allTodosData, setAllTodosData] = useState<Array<TodoInterface>>([]);
+  const [completedTodos, setCompletedTodos] = useState<Array<TodoInterface>>(
+    [],
+  );
+  const [pendingTodos, setPendingTodos] = useState<Array<TodoInterface>>([]);
+  const [selectedTodo, setSelectedTodo] = useState({});
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleNameChange(e: ChangeEvent<HTMLInputElement>) {
@@ -104,6 +118,27 @@ function App() {
         };
       };
     }
+  }
+
+  function handleCheckedTodos(
+    e: React.ChangeEvent<HTMLInputElement>,
+    t: TodoInterface,
+  ) {
+    const updatedTodos = allTodosData.map((todo) =>
+      todo.id === t.id ? { ...todo, completed: e.target.checked } : todo,
+    );
+    const completed = updatedTodos.filter((todo) => todo.completed);
+    const pending = updatedTodos.filter((todo) => !todo.completed);
+    setAllTodosData(updatedTodos);
+    setCompletedTodos(completed);
+    setPendingTodos(pending);
+  }
+
+  function handleEditTodo(t: TodoInterface) {
+    setSelectedTodo(t);
+    setTitle(t.title);
+    setDesc(t.description);
+    setDate(t.date);
   }
 
   useEffect(() => {
@@ -237,35 +272,139 @@ function App() {
             <h3>Update</h3>
           </div>
           <TabsContent value="all">
-            {allTodosData &&
-              allTodosData.length > 0 &&
-              allTodosData.map((t) => {
+            {allTodosData && allTodosData.length > 0 ? (
+              allTodosData.map((t: TodoInterface) => {
                 return (
-                  <div key={t?.id} className="grid grid-cols-7 gap-3 items-center justify-items-start grid-flow-col ">
+                  <div
+                    key={t?.id}
+                    className="grid grid-cols-7 gap-3 items-center justify-items-start grid-flow-col "
+                  >
                     <label className="col-span-1">
                       <input
                         type="checkbox"
-                        checked={completed}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          setCompleted(e.target.checked)
-                        }
+                        checked={t?.completed}
+                        onChange={(e) => handleCheckedTodos(e, t)}
                       />
                     </label>
-                    <h3 className="col-span-1">{t?.title}</h3>
-                    <h3 className="col-span-3">{t?.description}</h3>
-                    <h3>{t?.date?.toLocaleString().split(",")[0]}</h3>
+                    <h3
+                      className={`col-span-1 ${t?.completed ? "line-through text-[#888]" : "no-underline text-[#FFF]"}`}
+                    >
+                      {t?.title}
+                    </h3>
+                    <h3
+                      className={`col-span-3 ${t?.completed ? "line-through text-[#888]" : "no-underline text-[#FFF]"}`}
+                    >
+                      {t?.description}
+                    </h3>
+                    <h3
+                      className={`${t?.completed ? "line-through text-[#888]" : "no-underline text-[#FFF]"}`}
+                    >
+                      {t?.date?.toLocaleString().split(",")[0]}
+                    </h3>
                     <div className="flex items-center">
-                    <Button className="min-w-fit bg-transparent text-green-500 font-bold"><CiEdit size={30} /></Button>
-                    <Button className="min-w-fit bg-transparent text-red-500 font-bold"><MdDeleteForever size={25}/></Button>
+                      <Button className="min-w-fit bg-transparent text-green-500 font-bold">
+                        <CiEdit size={30} />
+                      </Button>
+                      <Button className="min-w-fit bg-transparent text-red-500 font-bold">
+                        <MdDeleteForever size={25} />
+                      </Button>
                     </div>
                   </div>
                 );
-              })}
-            {allTodosData.length === 0 && <p>No Todos Created Yet</p>}
+              })
+            ) : (
+              <p>No Todos Created Yet</p>
+            )}
           </TabsContent>
-          <TabsContent value="pending">Change your password here.</TabsContent>
+          <TabsContent value="pending">
+            {pendingTodos && pendingTodos.length > 0 ? (
+              pendingTodos.map((t: TodoInterface) => {
+                return (
+                  <div
+                    key={t?.id}
+                    className="grid grid-cols-7 gap-3 items-center justify-items-start grid-flow-col "
+                  >
+                    <label className="col-span-1">
+                      <input
+                        type="checkbox"
+                        checked={t?.completed}
+                        onChange={(e) => handleCheckedTodos(e, t)}
+                      />
+                    </label>
+                    <h3
+                      className={`col-span-1 ${t?.completed ? "line-through text-[#888]" : "no-underline text-[#FFF]"}`}
+                    >
+                      {t?.title}
+                    </h3>
+                    <h3
+                      className={`col-span-3 ${t?.completed ? "line-through text-[#888]" : "no-underline text-[#FFF]"}`}
+                    >
+                      {t?.description}
+                    </h3>
+                    <h3
+                      className={`${t?.completed ? "line-through text-[#888]" : "no-underline text-[#FFF]"}`}
+                    >
+                      {t?.date?.toLocaleString().split(",")[0]}
+                    </h3>
+                    <div className="flex items-center">
+                      <Button className="min-w-fit bg-transparent text-green-500 font-bold">
+                        <CiEdit size={30} />
+                      </Button>
+                      <Button className="min-w-fit bg-transparent text-red-500 font-bold">
+                        <MdDeleteForever size={25} />
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <p>No Todos Created Yet</p>
+            )}
+          </TabsContent>
           <TabsContent value="completed">
-            Change your password here.
+            {completedTodos && completedTodos.length > 0 ? (
+              completedTodos.map((t: TodoInterface) => {
+                return (
+                  <div
+                    key={t?.id}
+                    className="grid grid-cols-7 gap-3 items-center justify-items-start grid-flow-col "
+                  >
+                    <label className="col-span-1">
+                      <input
+                        type="checkbox"
+                        checked={t?.completed}
+                        onChange={(e) => handleCheckedTodos(e, t)}
+                      />
+                    </label>
+                    <h3
+                      className={`col-span-1 ${t?.completed ? "line-through text-[#888]" : "no-underline text-[#FFF]"}`}
+                    >
+                      {t?.title}
+                    </h3>
+                    <h3
+                      className={`col-span-3 ${t?.completed ? "line-through text-[#888]" : "no-underline text-[#FFF]"}`}
+                    >
+                      {t?.description}
+                    </h3>
+                    <h3
+                      className={`${t?.completed ? "line-through text-[#888]" : "no-underline text-[#FFF]"}`}
+                    >
+                      {t?.date?.toLocaleString().split(",")[0]}
+                    </h3>
+                    <div className="flex items-center">
+                      <Button className="min-w-fit bg-transparent text-green-500 font-bold">
+                        <CiEdit size={30} />
+                      </Button>
+                      <Button className="min-w-fit bg-transparent text-red-500 font-bold">
+                        <MdDeleteForever size={25} />
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <p>No Todos Created Yet</p>
+            )}
           </TabsContent>
         </Tabs>
       </div>
