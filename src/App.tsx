@@ -4,6 +4,8 @@ import ThemeToggle from "./components/ThemeToggle";
 import { ChangeEvent, useEffect, useState, useRef } from "react";
 import { format } from "date-fns";
 import { FaCalendarAlt } from "react-icons/fa";
+import { CiEdit } from "react-icons/ci";
+import { MdDeleteForever } from "react-icons/md";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -14,7 +16,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { createTodoCollection } from "./lib/db";
-// import { v4 as uuid } from "uuid";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { v4 as uuid } from "uuid";
 
 function App() {
   const [timeOfDay, setTimeOfDay] = useState<string>("");
@@ -37,27 +40,31 @@ function App() {
   }
 
   function getAllTodos() {
-    const dbPromise = indexedDB.open("todoDatabase", 2)
+    const dbPromise = indexedDB.open("todoDatabase", 2);
 
     dbPromise.onsuccess = () => {
       const db = dbPromise.result;
 
-      const transaction = db.transaction('todoList', 'readonly');
+      const transaction = db.transaction("todoList", "readonly");
 
-      const todoList = transaction.objectStore('todoList');
+      const todoList = transaction.objectStore("todoList");
 
       const todos = todoList.getAll();
 
       todos.onsuccess = (query) => {
-        setAllTodosData(query?.srcElement?.result)
+        setAllTodosData(query?.target?.result);
       };
 
       todos.onerror = () => {
-        alert("Error occured while loading initial data")
+        alert("Error occured while loading initial data");
       };
 
       transaction.oncomplete = () => {
         db.close();
+        setTitle("");
+        setDesc("");
+        setDate(undefined);
+        setCompleted(false);
       };
     };
   }
@@ -71,36 +78,39 @@ function App() {
       dbPromise.onsuccess = () => {
         const db = dbPromise.result;
 
-        const transaction = db.transaction('todoList', 'readwrite');
+        const transaction = db.transaction("todoList", "readwrite");
 
-        const todoList = transaction.objectStore('todoList');
+        const todoList = transaction.objectStore("todoList");
 
         const todos = todoList.put({
-          id: 1,
+          id: uuid(),
           title,
           description: desc,
           date,
-          completed
-        })
+          completed,
+        });
 
         todos.onsuccess = () => {
           transaction.oncomplete = () => {
             db.close();
           };
-
-          alert('Task added successfully!')
+          getAllTodos();
+          alert("Task added successfully!");
         };
 
         todos.onerror = (e) => {
           console.log(e);
-          alert('Error adding task!')
+          alert("Error adding task!");
         };
-      }
+      };
     }
   }
 
   useEffect(() => {
     createTodoCollection();
+  }, []);
+
+  useEffect(() => {
     getAllTodos();
   }, []);
 
@@ -132,8 +142,6 @@ function App() {
     localStorage.setItem("userName", userName);
   }, [userName]);
 
-  // console.log("TODOS: ", allTodosData)
-
   return (
     <div className="h-full dark:bg-background bg-[#EEE] py-5 px-5 font-Nunito">
       {/* Welcome Message */}
@@ -164,7 +172,7 @@ function App() {
               type="text"
               placeholder="e.g. Submit TODO Task"
               value={title}
-              className="block dark:border dark:border-input dark:bg-background dark:hover:bg-accent dark:hover:text-accent-foreground description shadow-xl dark:shadow-none"
+              className="block dark:border dark:border-input dark:bg-background dark:hover:bg-accent dark:hover:text-accent-foreground dark:text-white description shadow-xl dark:shadow-none"
               onChange={handleTitleChange}
             />
           </label>
@@ -174,7 +182,7 @@ function App() {
               type="text"
               placeholder="e.g.Description of TOFO task"
               value={desc}
-              className="block dark:border dark:border-input dark:bg-background dark:hover:bg-accent dark:hover:text-accent-foreground description shadow-xl dark:shadow-none"
+              className="block dark:border dark:border-input dark:bg-background dark:hover:bg-accent dark:hover:text-accent-foreground dark:text-white description shadow-xl dark:shadow-none"
               onChange={handleDescChange}
             />
           </label>
@@ -185,7 +193,7 @@ function App() {
                 <Button
                   variant={"outline"}
                   className={cn(
-                    "w-[240px] justify-start text-left font-normal text-xl h-[3.75rem]",
+                    "sm:w-full md:w-[240px] justify-start text-left font-normal text-xl h-[3.75rem]",
                     !date && "text-muted-foreground",
                   )}
                 >
@@ -206,7 +214,7 @@ function App() {
         </div>
         <Button
           type="submit"
-          className="w-full h-[3.75rem] text-xl bg-[#da213f] shadow-xl dark:shadow-none dark:text-accent-foreground hover:bg-[#f0556e] transition duration-200 ease-in-out"
+          className="w-full h-[3.75rem] text-xl bg-[#da213f] shadow-xl dark:shadow-none dark:text-accent-foreground hover:bg-[#f0556e] transition duration-200 ease-in-out mb-9"
         >
           Add Task
         </Button>
@@ -215,13 +223,51 @@ function App() {
       {/* Display the TODOS */}
       <div>
         {/* Tab for displaying All tasks, Completed Tasks, Pending Tasks */}
-        <div>
-            <label>
-              <input type="checkbox" checked={completed} onChange={(e:React.ChangeEvent<HTMLInputElement>) => setCompleted(e.target.checked)} />
-            </label>
-
-
-        </div>
+        <Tabs defaultValue="all" className="w-full">
+          <TabsList>
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="pending">Pending</TabsTrigger>
+            <TabsTrigger value="completed">Completed</TabsTrigger>
+          </TabsList>
+          <div className="grid grid-cols-7 gap-3 align-start grid-flow-col my-5 font-semibold text-lg">
+            <h3>Done</h3>
+            <h3>Title</h3>
+            <h3 className="col-span-3">Description</h3>
+            <h3>Date</h3>
+            <h3>Update</h3>
+          </div>
+          <TabsContent value="all">
+            {allTodosData &&
+              allTodosData.length > 0 &&
+              allTodosData.map((t) => {
+                return (
+                  <div key={t?.id} className="grid grid-cols-7 gap-3 items-center justify-items-start grid-flow-col ">
+                    <label className="col-span-1">
+                      <input
+                        type="checkbox"
+                        checked={completed}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setCompleted(e.target.checked)
+                        }
+                      />
+                    </label>
+                    <h3 className="col-span-1">{t?.title}</h3>
+                    <h3 className="col-span-3">{t?.description}</h3>
+                    <h3>{t?.date?.toLocaleString().split(",")[0]}</h3>
+                    <div className="flex items-center">
+                    <Button className="min-w-fit bg-transparent text-green-500 font-bold"><CiEdit size={30} /></Button>
+                    <Button className="min-w-fit bg-transparent text-red-500 font-bold"><MdDeleteForever size={25}/></Button>
+                    </div>
+                  </div>
+                );
+              })}
+            {allTodosData.length === 0 && <p>No Todos Created Yet</p>}
+          </TabsContent>
+          <TabsContent value="pending">Change your password here.</TabsContent>
+          <TabsContent value="completed">
+            Change your password here.
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

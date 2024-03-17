@@ -16,6 +16,7 @@ export function createTodoCollection () {
       if (!db.objectStoreNames.contains("todoList")) {
         db.createObjectStore('todoList', {
             keyPath: "id",
+            autoIncrement: true
         })
       }
     };
