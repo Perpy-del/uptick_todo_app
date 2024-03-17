@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import ThemeToggle from "./components/ThemeToggle";
 
 import { ChangeEvent, useEffect, useState, useRef } from "react";
@@ -22,6 +23,7 @@ function App() {
   const [desc, setDesc] = useState<string>("");
   const [date, setDate] = useState<Date>();
   const [completed, setCompleted] = useState<boolean>(false);
+  const [allTodosData, setAllTodosData] = useState<Array<any>>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleNameChange(e: ChangeEvent<HTMLInputElement>) {
@@ -34,7 +36,33 @@ function App() {
     setDesc(e.target.value);
   }
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function getAllTodos() {
+    const dbPromise = indexedDB.open("todoDatabase", 2)
+
+    dbPromise.onsuccess = () => {
+      const db = dbPromise.result;
+
+      const transaction = db.transaction('todoList', 'readonly');
+
+      const todoList = transaction.objectStore('todoList');
+
+      const todos = todoList.getAll();
+
+      todos.onsuccess = (query) => {
+        setAllTodosData(query?.srcElement?.result)
+      };
+
+      todos.onerror = () => {
+        alert("Error occured while loading initial data")
+      };
+
+      transaction.oncomplete = () => {
+        db.close();
+      };
+    };
+  }
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     console.log({ title, desc, date });
     const dbPromise = indexedDB.open("todoDatabase", 2);
@@ -73,6 +101,7 @@ function App() {
 
   useEffect(() => {
     createTodoCollection();
+    getAllTodos();
   }, []);
 
   useEffect(() => {
@@ -102,6 +131,8 @@ function App() {
   useEffect(() => {
     localStorage.setItem("userName", userName);
   }, [userName]);
+
+  // console.log("TODOS: ", allTodosData)
 
   return (
     <div className="h-full dark:bg-background bg-[#EEE] py-5 px-5 font-Nunito">
