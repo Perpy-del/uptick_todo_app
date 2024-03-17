@@ -33,7 +33,6 @@ function App() {
   const [title, setTitle] = useState<string>("");
   const [desc, setDesc] = useState<string>("");
   const [date, setDate] = useState<Date>();
-  const [checkedItem, setCheckedItem] = useState<string | null>(null);
   const [allTodosData, setAllTodosData] = useState<Array<TodoInterface>>([]);
   const [completedTodos, setCompletedTodos] = useState<Array<TodoInterface>>(
     [],
@@ -96,8 +95,6 @@ function App() {
   }
 
   function handleCheckedTodos(id: string) {
-    setCheckedItem(id);
-
     handleUpdateTodoDatabase(id);
   }
 
@@ -254,7 +251,7 @@ function App() {
                     <label className="col-span-1">
                       <input
                         type="checkbox"
-                        checked={checkedItem === t?.id}
+                        checked={t?.completed}
                         onChange={() => handleCheckedTodos(t?.id)}
                       />
                     </label>
