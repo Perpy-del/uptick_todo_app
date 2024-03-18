@@ -47,7 +47,7 @@ export function useForm(getAllTodos: () => void) {
     } else if (!date) {
       setDescNotValid(false);
       setDateNotValid(true);
-    } else if (date && currDate > date) {
+    } else if (date && currDate >= date) {
       setDateNotValid(false);
       setDateNotPassed(true);
     } else {
