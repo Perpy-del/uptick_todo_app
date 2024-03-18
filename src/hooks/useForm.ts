@@ -36,7 +36,8 @@ export function useForm(getAllTodos: () => void) {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    const currDate = new Date();
+    const now = new Date();
+    const currDate = now.setDate(now.getDate() - 1)
     if (!title) {
       setTitleNotValid(true);
     } else if (title && !desc) {
@@ -47,7 +48,7 @@ export function useForm(getAllTodos: () => void) {
     } else if (!date) {
       setDescNotValid(false);
       setDateNotValid(true);
-    } else if (date && currDate >= date) {
+    } else if (date && currDate > date) {
       setDateNotValid(false);
       setDateNotPassed(true);
     } else {
