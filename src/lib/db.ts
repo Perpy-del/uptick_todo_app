@@ -4,7 +4,7 @@ export function createTodoCollection () {
       return;
     }
     
-    const request = indexedDB.open("todoListDatabase", 2);
+    const request = indexedDB.open("TODODatabase", 1);
 
     request.onerror = (event) => {
         console.log("Error: ", event);
@@ -25,21 +25,3 @@ export function createTodoCollection () {
         console.log("Database opened successfully");
     }
 }
-
-// store.createIndex("todo_title", ["title"], { unique: false });
-// store.createIndex("todo_description", ["description"], {
-//   unique: false,
-// });
-// store.createIndex("todo_date", ["date"], {
-//   unique: false,
-// });
-// store.createIndex("todo_completed", ["completed"], {
-//   unique: false,
-// });
-// store.createIndex(
-//   "completed_todos",
-//   ["title", "description", "date", "completed"],
-//   {
-//     unique: false,
-//   },
-// );

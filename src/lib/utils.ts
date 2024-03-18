@@ -20,7 +20,9 @@ export function handleAddTodoDatabase({
   getAllTodos: () => void;
   id: string;
 }) {
-  const dbPromise = indexedDB.open("todoListDatabase", 2);
+  const dbPromise = indexedDB.open("TODODatabase", 1);
+
+  if (!title || !desc || !date) return;
 
   if (title && desc && date) {
     dbPromise.onsuccess = () => {
@@ -55,7 +57,7 @@ export function handleAddTodoDatabase({
 }
 
 export function handleUpdateTodoDatabase(id: string) {
-  const dbPromise = indexedDB.open("todoListDatabase", 2);
+  const dbPromise = indexedDB.open("TODODatabase", 1);
 
   dbPromise.onsuccess = () => {
     const db = dbPromise.result;
@@ -73,6 +75,44 @@ export function handleUpdateTodoDatabase(id: string) {
       const updateTodo = todoList.put(todoItem);
 
       updateTodo.onsuccess = () => {
+        alert("Task updated successfully!");
+      };
+
+      updateTodo.onerror = () => {
+        alert("Error updating task!");
+      };
+    };
+
+    todo.onerror = (e) => {
+      console.log(e);
+      alert("Error fetching task!");
+    };
+  };
+}
+
+export function handleEditTodoDatabase({id, title, description, date, getAllTodos}: {id: string, title: string, description: string, date: Date | undefined, getAllTodos: () => void}) {
+  const dbPromise = indexedDB.open("TODODatabase", 1);
+
+  dbPromise.onsuccess = () => {
+    const db = dbPromise.result;
+
+    const transaction = db.transaction("todoList", "readwrite");
+
+    const todoList = transaction.objectStore("todoList");
+
+    const todo = todoList.get(id);
+
+    todo.onsuccess = (event) => {
+      const todoItem = (event?.target as IDBRequest).result;
+
+      todoItem.title = title;
+      todoItem.description = description;
+      todoItem.date = date;
+      todoItem.id = id;
+      const updateTodo = todoList.put(todoItem);
+
+      updateTodo.onsuccess = () => {
+        getAllTodos();
         alert("Task updated successfully!");
       };
 
