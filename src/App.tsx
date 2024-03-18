@@ -200,9 +200,9 @@ function App() {
   }, [userName]);
 
   return (
-    <div className="h-full dark:bg-background bg-[#EEE] py-5 px-5 font-Nunito">
+    <div className="h-[150vh] dark:bg-background bg-[#EEE] pt-5 pb-20 sm:px-3 md:px-5 font-Nunito">
       {/* Welcome Message */}
-      <div className="text-darkText font-bold text-2xl flex justify-between items-center pb-6">
+      <div className="text-darkText font-bold sm:text-xl md:text-2xl flex justify-between items-center pb-6">
         <h3>
           Good {timeOfDay},{" "}
           <input
@@ -223,7 +223,7 @@ function App() {
           What do you have planned?
         </h3>
         <div className="flex sm:flex-col md:flex-row gap-10 pb-10">
-          <label className="text-xl sm:w-full md:w-[70%]">
+          <label className="sm:text-lg md:text-xl sm:w-full md:w-[70%]">
             <h3 className="pb-2">Title:</h3>
             <input
               type="text"
@@ -234,7 +234,7 @@ function App() {
               ref={inputTitleRef}
             />
           </label>
-          <label className="text-xl w-full">
+          <label className="sm:text-lg md:text-xl w-full">
             <h3 className="pb-2">Description:</h3>
             <input
               type="text"
@@ -244,14 +244,14 @@ function App() {
               onChange={handleDescChange}
             />
           </label>
-          <label className="text-xl">
+          <label className="sm:text-lg md:text-xl">
             <h3 className="pb-2">Date:</h3>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant={"outline"}
                   className={cn(
-                    "sm:w-full md:w-[240px] justify-start text-left font-normal text-xl h-[3.75rem]",
+                    "sm:w-full md:w-[240px] justify-start text-left font-normal sm:text-lg md:text-xl h-[3.75rem]",
                     !date && "text-muted-foreground",
                   )}
                 >
@@ -272,7 +272,7 @@ function App() {
         </div>
         <Button
           type="submit"
-          className="w-full h-[3.75rem] text-xl bg-[#da213f] shadow-xl dark:shadow-none dark:text-accent-foreground hover:bg-[#f0556e] transition duration-200 ease-in-out mb-9"
+          className="w-full h-[3.75rem] sm:text-lg md:text-xl bg-[#da213f] shadow-xl dark:shadow-none dark:text-accent-foreground hover:bg-[#f0556e] transition duration-200 ease-in-out mb-9"
         >
           {edit ? "Update Task" : "Add Task"}
         </Button>
@@ -291,10 +291,10 @@ function App() {
               Completed
             </TabsTrigger>
           </TabsList>
-          <div className="grid grid-cols-7 gap-3 align-start grid-flow-col my-5 font-semibold text-lg">
+          <div className="grid grid-cols-7 gap-3 align-start grid-flow-col my-5 font-semibold sm:text-sm md:text-lg">
             <h3>Done</h3>
             <h3>Title</h3>
-            <h3 className="col-span-3">Description</h3>
+            <h3 className="sm:col-span-2 md:col-span-3">Description</h3>
             <h3>Date</h3>
             <h3>Update</h3>
           </div>
@@ -314,24 +314,24 @@ function App() {
                       />
                     </label>
                     <h3
-                      className={`col-span-1 ${t?.completed ? "line-through text-[#888]" : "no-underline dark:text-[#FFF]"}`}
+                      className={`sm:text-xs md:text-base text-ellipsis sm:w-[70%] md:w-full sm:overflow-hidden md:overflow-auto ${t?.completed ? "line-through text-[#888]" : "no-underline dark:text-[#FFF]"}`}
                     >
                       {t?.title}
                     </h3>
                     <h3
-                      className={`col-span-3 ${t?.completed ? "line-through text-[#888]" : "no-underline dark:text-[#FFF]"}`}
+                      className={`sm:col-span-2 md:col-span-3 sm:text-xs md:text-base ${t?.completed ? "line-through text-[#888]" : "no-underline dark:text-[#FFF]"}`}
                     >
                       {t?.description}
                     </h3>
                     <h3
-                      className={`${t?.completed ? "line-through text-[#888]" : "no-underline dark:text-[#FFF]"}`}
+                      className={`sm:text-[8px] md:w-full md:text-base ${t?.completed ? "line-through text-[#888]" : "no-underline dark:text-[#FFF]"}`}
                     >
                       {t?.date?.toLocaleString().split(",")[0]}
                     </h3>
                     {t?.completed ? (
-                      <p>Task Completed</p>
+                      <p className="sm:text-[10px] md:text-base">Task Completed</p>
                     ) : (
-                      <div className="flex items-center">
+                      <div className="flex sm:flex-col md:items-center md:flex-row">
                         <Button
                           variant="edit"
                           onClick={() => handleEditTodo(t?.id)}
@@ -347,7 +347,7 @@ function App() {
                 );
               })
             ) : (
-              <p className="text-center mt-16 font-bold text-3xl text-red-500">
+              <p className="text-center mt-16 font-bold sm:text-xl md:text-3xl text-red-500">
                 🤷‍♀️ No Todos Created Yet
               </p>
             )}
