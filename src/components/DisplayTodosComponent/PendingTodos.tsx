@@ -20,7 +20,7 @@ const PendingTodos = () => {
           );
         })
       ) : (
-        <p className="text-center mt-16 font-bold text-3xl text-red-500">
+        <p className="text-center mt-16 font-bold sm:text-xl md:text-3xl text-red-500">
           🤷‍♀️ No Todos Created Yet
         </p>
       )}
