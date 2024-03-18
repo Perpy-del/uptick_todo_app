@@ -12,6 +12,7 @@ const buttonVariants = cva(
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
         edit: "min-w-fit bg-transparent text-green-500 font-bold focus:bg-transparent border-none",
+        delete: "min-w-fit bg-transparent text-red-500 font-bold focus:bg-transparent border-none",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:

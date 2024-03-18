@@ -90,7 +90,64 @@ export function handleUpdateTodoDatabase(id: string) {
   };
 }
 
-export function handleEditTodoDatabase({id, title, description, date, getAllTodos}: {id: string, title: string, description: string, date: Date | undefined, getAllTodos: () => void}) {
+export function handleEditTodoDatabase({
+  id,
+  title,
+  description,
+  date,
+  getAllTodos,
+}: {
+  id: string | undefined;
+  title: string;
+  description: string;
+  date: Date | undefined;
+  getAllTodos: () => void;
+}) {
+  const dbPromise = indexedDB.open("TODODatabase", 1);
+
+  dbPromise.onsuccess = () => {
+    const db = dbPromise.result;
+
+    const transaction = db.transaction("todoList", "readwrite");
+
+    const todoList = transaction.objectStore("todoList");
+    if (id) {
+      const todo = todoList.get(id);
+
+      todo.onsuccess = (event) => {
+        const todoItem = (event?.target as IDBRequest).result;
+
+        todoItem.title = title;
+        todoItem.description = description;
+        todoItem.date = date;
+        todoItem.id = id;
+        const updateTodo = todoList.put(todoItem);
+
+        updateTodo.onsuccess = () => {
+          getAllTodos();
+          alert("Task updated successfully!");
+        };
+
+        updateTodo.onerror = () => {
+          alert("Error updating task!");
+        };
+      };
+
+      todo.onerror = (e) => {
+        console.log(e);
+        alert("Error fetching task!");
+      };
+    }
+  };
+}
+
+export function handleDeleteTodoDatabase({
+  id,
+  getAllTodos,
+}: {
+  id: string;
+  getAllTodos: () => void;
+}) {
   const dbPromise = indexedDB.open("TODODatabase", 1);
 
   dbPromise.onsuccess = () => {
@@ -100,30 +157,23 @@ export function handleEditTodoDatabase({id, title, description, date, getAllTodo
 
     const todoList = transaction.objectStore("todoList");
 
-    const todo = todoList.get(id);
+    const confirmDeleteTodo = confirm(
+      "Are you sure you want to delete this task?",
+    );
 
-    todo.onsuccess = (event) => {
-      const todoItem = (event?.target as IDBRequest).result;
+    if (confirmDeleteTodo) {
+      const deleteTodo = todoList.delete(id);
 
-      todoItem.title = title;
-      todoItem.description = description;
-      todoItem.date = date;
-      todoItem.id = id;
-      const updateTodo = todoList.put(todoItem);
-
-      updateTodo.onsuccess = () => {
+      deleteTodo.onsuccess = () => {
         getAllTodos();
-        alert("Task updated successfully!");
+        console.log("Task deleted successfully");
+        alert("Task deleted successfully");
       };
 
-      updateTodo.onerror = () => {
-        alert("Error updating task!");
+      deleteTodo.onerror = (e) => {
+        console.log(e);
+        alert("Error deleting task!");
       };
-    };
-
-    todo.onerror = (e) => {
-      console.log(e);
-      alert("Error fetching task!");
-    };
+    }
   };
 }

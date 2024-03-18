@@ -10,6 +10,7 @@ import { MdDeleteForever } from "react-icons/md";
 import {
   cn,
   handleAddTodoDatabase,
+  handleDeleteTodoDatabase,
   handleEditTodoDatabase,
   // handleEditTodoDatabase,
   handleUpdateTodoDatabase,
@@ -45,7 +46,7 @@ function App() {
     [],
   );
   const [pendingTodos, setPendingTodos] = useState<Array<TodoInterface>>([]);
-  const [selectedTodo, setSelectedTodo] = useState({});
+  const [selectedTodo, setSelectedTodo] = useState<TodoInterface | undefined>(undefined);
   const [edit, setEdit] = useState<boolean>(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -130,12 +131,16 @@ function App() {
   function handleEditTodo(id: string) {
     const editTodo = allTodosData.filter((todo) => todo.id === id)[0];
     setSelectedTodo(editTodo);
-    console.log("edit todo", editTodo);
     inputTitleRef.current?.focus();
     setTitle(editTodo.title);
     setDesc(editTodo.description);
     setDate(editTodo.date);
     setEdit(true);
+  }
+
+  // handle delete todo
+  function handleDeleteTodo(id: string) {
+    handleDeleteTodoDatabase({id, getAllTodos})
   }
 
   // handle completed tasks
@@ -333,7 +338,7 @@ function App() {
                         >
                           <CiEdit size={30} />
                         </Button>
-                        <Button className="min-w-fit bg-transparent text-red-500 font-bold">
+                        <Button variant='delete' onClick={() => handleDeleteTodo(t?.id)}>
                           <MdDeleteForever size={25} />
                         </Button>
                       </div>
