@@ -58,7 +58,7 @@ export function handleAddTodoDatabase({
   }
 }
 
-export function handleUpdateTodoDatabase({id, getAllTodos}: {id: string, getAllTodos: () => void}) {
+export function handleUpdateTodoDatabase(id: string) {
   const dbPromise = indexedDB.open("TODODatabase", 1);
 
   dbPromise.onsuccess = () => {
@@ -77,7 +77,6 @@ export function handleUpdateTodoDatabase({id, getAllTodos}: {id: string, getAllT
       const updateTodo = todoList.put(todoItem);
 
       updateTodo.onsuccess = () => {
-        getAllTodos();
         alert("Task updated successfully!");
       };
 
