@@ -35,7 +35,12 @@ const TodoListItem = (t: TodoInterface) => {
         {t?.date?.toLocaleString().split(",")[0]}
       </h3>
       {t?.completed ? (
-        <p className="sm:text-[10px] md:text-base">Task Completed</p>
+        <div className="flex sm:flex-col md:items-center lg:flex-row">
+          <p className="sm:text-[10px] md:text-sm">Completed</p>
+          <Button variant="delete" onClick={() => handleDeleteTodo(t?.id)}>
+            <MdDeleteForever size={25} />
+          </Button>
+        </div>
       ) : (
         <div className="flex sm:flex-col md:items-center md:flex-row">
           <Button variant="edit" onClick={() => handleEditTodo(t?.id)}>
