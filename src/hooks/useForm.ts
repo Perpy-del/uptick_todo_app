@@ -36,8 +36,9 @@ export function useForm(getAllTodos: () => void) {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    const now = new Date();
-    const currDate = now.setDate(now.getDate() - 1)
+    const currDate = new Date();
+    currDate.setDate(now.getDate() - 1)
+    
     if (!title) {
       setTitleNotValid(true);
     } else if (title && !desc) {
