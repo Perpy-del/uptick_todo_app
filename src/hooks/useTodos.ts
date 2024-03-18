@@ -52,7 +52,7 @@ export function useTodos() {
 
   // handle checkbox to update a task as completed
   function handleCheckedTodos(id: string) {
-    handleUpdateTodoDatabase({id, getAllTodos});
+    handleUpdateTodoDatabase(id);
   }
 
   // handle edit todo
