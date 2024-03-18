@@ -61,15 +61,25 @@ Vue.js).
 -   [TailwindCSS](https://tailwindcss.com/) - A utility-first CSS framework packed with classes that can be composed to build any design, directly in your markup.
 -   [Shadcn](https://ui.shadcn.com/docs/installation) - Beautifully designed reusable components that you can copy and paste into your application.
 
+### Browser Storage
+- [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) - IndexedDB is a low-level API for client-side storage of significant amounts of structured data, including files/blobs.
+
+### Challenges Faced
+- The major challenge was trying to integrate IndexedDB as the browser storage I used for the application. I love challenges and I set out to use IndexedDB as opposed to localStorage since I have never used it before and would love the experience. It was an amazing experience overall.
+Resources that helped me include:
+- [MDN](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
+- [MDN Example](https://github.com/mdn/dom-examples/tree/main/to-do-notifications)
+- [An article on DEV.TO by Chibuike Nwachukwu](https://dev.to/logrocket/a-complete-guide-to-using-indexeddb-5dci)
+- [An article on DEV.TO by Alex Eagleson](https://dev.to/alexeagleson/how-to-use-indexeddb-to-store-data-for-your-web-application-in-the-browser-1o90)
+
 ### Demo:
 
 Deployed using Vercel:
-[Uptick Movies](https://uptick-frontend-development.vercel.app/)
+[Uptick TODO App](https://uptick-todo-app.vercel.app/)
 
 #### Screenshot of the app:
 
-![Uptick](./uptick-movie-app/src/images/sc_uptick.png)
+![Uptick](./public/uptick_ss.png)
 
-More of the project is found in the [uptick-movie-app](./uptick-movie-app) folder.
 
 ### *Thank you for reading*
