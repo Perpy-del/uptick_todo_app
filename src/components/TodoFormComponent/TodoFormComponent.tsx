@@ -19,16 +19,16 @@ const TodoFormComponent = () => {
         <TodoDateComponent date={date} setDate={setDate} />
       </div>
       {titleNotValid && (
-        <p className="text-red-700">The title field cannot be empty</p>
+        <p className="text-red-700 text-lg text-center pb-5 font-bold">The title field cannot be empty</p>
       )}
       {descNotValid && (
-        <p className="text-red-700">The description field cannot be empty</p>
+        <p className="text-red-700 text-lg text-center pb- font-bold">The description field cannot be empty</p>
       )}
       {dateNotValid && (
-        <p className="text-red-700">Please input a valid date.</p>
+        <p className="text-red-700 text-lg text-center pb-5 font-bold">Please input a valid date.</p>
       )}
       {dateNotPassed && (
-        <p className="text-red-700">
+        <p className="text-red-700 text-lg text-center pb-5 font-bold">
           The selected date is not current. Please enter a current date
         </p>
       )}

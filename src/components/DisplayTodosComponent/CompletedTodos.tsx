@@ -6,7 +6,7 @@ import { TodoInterface } from "@/interface/TodoInterface";
 const CompletedTodos = () => {
   const { completedTodos } = useTodos();
   return (
-    <TabsContent value="pending">
+    <TabsContent value="completed">
       {completedTodos && completedTodos.length > 0 ? (
         completedTodos.map((t: TodoInterface) => {
           return (
