@@ -41,14 +41,25 @@ function App() {
   const [title, setTitle] = useState<string>("");
   const [desc, setDesc] = useState<string>("");
   const [date, setDate] = useState<Date>();
+
+  // states for todos
   const [allTodosData, setAllTodosData] = useState<Array<TodoInterface>>([]);
   const [completedTodos, setCompletedTodos] = useState<Array<TodoInterface>>(
     [],
   );
   const [pendingTodos, setPendingTodos] = useState<Array<TodoInterface>>([]);
-  const [selectedTodo, setSelectedTodo] = useState<TodoInterface | undefined>(undefined);
+  const [selectedTodo, setSelectedTodo] = useState<TodoInterface | undefined>(
+    undefined,
+  );
   const [edit, setEdit] = useState<boolean>(false);
 
+  // Validation
+  const [titleNotValid, setTitleNotValid] = useState<boolean>(false);
+  const [descNotValid, setDescNotValid] = useState<boolean>(false);
+  const [dateNotValid, setDateNotValid] = useState<boolean>(false);
+  const [dateNotPassed, setDateNotPassed] = useState<boolean>(false);
+
+  // useRef for input
   const inputRef = useRef<HTMLInputElement>(null);
   const inputTitleRef = useRef<HTMLInputElement>(null);
 
@@ -97,29 +108,50 @@ function App() {
   // handle adding a new task to the database
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log({ title, desc, date });
-    if (edit) {
-      handleEditTodoDatabase({
-        id: selectedTodo?.id,
-        title,
-        description: desc,
-        date,
-        getAllTodos,
-      });
+
+    const currDate = new Date();
+    if (!title) {
+      setTitleNotValid(true);
+    } else if (title && !desc) {
+      setDescNotValid(true);
+      setTitleNotValid(false);
+    } else if (!desc) {
+      setDescNotValid(true);
+    } else if (!date) {
+      setDescNotValid(false);
+      setDateNotValid(true);
+    } else if (date && currDate > date) {
+      setDateNotValid(false);
+      setDateNotPassed(true);
     } else {
-      handleAddTodoDatabase({
-        title,
-        desc,
-        date,
-        completed: false,
-        getAllTodos,
-        id: uuid(),
-      });
+      setTitleNotValid(false);
+      setDateNotValid(false);
+      setDescNotValid(false);
+      setDateNotPassed(false);
+      if (edit) {
+        handleEditTodoDatabase({
+          id: selectedTodo?.id,
+          title,
+          description: desc,
+          date,
+          getAllTodos,
+        });
+      } else {
+        handleAddTodoDatabase({
+          title,
+          desc,
+          date,
+          dateNotPassed,
+          completed: false,
+          getAllTodos,
+          id: uuid(),
+        });
+      }
+      setTitle("");
+      setDesc("");
+      setDate(undefined);
+      setEdit(false);
     }
-    setTitle("");
-    setDesc("");
-    setDate(undefined);
-    setEdit(false);
   }
 
   // handle checkbox to update a task as completed
@@ -140,7 +172,7 @@ function App() {
 
   // handle delete todo
   function handleDeleteTodo(id: string) {
-    handleDeleteTodoDatabase({id, getAllTodos})
+    handleDeleteTodoDatabase({ id, getAllTodos });
   }
 
   // handle completed tasks
@@ -270,6 +302,20 @@ function App() {
             </Popover>
           </label>
         </div>
+        {titleNotValid && (
+          <p className="text-red-700">The title field cannot be empty</p>
+        )}
+        {descNotValid && (
+          <p className="text-red-700">The description field cannot be empty</p>
+        )}
+        {dateNotValid && (
+          <p className="text-red-700">Please input a valid date.</p>
+        )}
+        {dateNotPassed && (
+          <p className="text-red-700">
+            The selected date is not current. Please enter a current date
+          </p>
+        )}
         <Button
           type="submit"
           className="w-full h-[3.75rem] sm:text-lg md:text-xl bg-[#da213f] shadow-xl dark:shadow-none dark:text-accent-foreground hover:bg-[#f0556e] transition duration-200 ease-in-out mb-9"
@@ -301,51 +347,56 @@ function App() {
           <TabsContent value="all">
             {allTodosData && allTodosData.length > 0 ? (
               allTodosData.map((t: TodoInterface) => {
-                return (
-                  <div
-                    key={t?.id}
-                    className="grid grid-cols-7 gap-3 items-center justify-items-start grid-flow-col "
-                  >
-                    <label className="col-span-1">
-                      <input
-                        type="checkbox"
-                        checked={t?.completed}
-                        onChange={() => handleCheckedTodos(t?.id)}
-                      />
-                    </label>
-                    <h3
-                      className={`sm:text-xs md:text-base text-ellipsis sm:w-[70%] md:w-full sm:overflow-hidden md:overflow-auto ${t?.completed ? "line-through text-[#888]" : "no-underline dark:text-[#FFF]"}`}
+                  return (
+                    <div
+                      key={t?.id}
+                      className="grid grid-cols-7 gap-3 items-center justify-items-start grid-flow-col "
                     >
-                      {t?.title}
-                    </h3>
-                    <h3
-                      className={`sm:col-span-2 md:col-span-3 sm:text-xs md:text-base ${t?.completed ? "line-through text-[#888]" : "no-underline dark:text-[#FFF]"}`}
-                    >
-                      {t?.description}
-                    </h3>
-                    <h3
-                      className={`sm:text-[8px] md:w-full md:text-base ${t?.completed ? "line-through text-[#888]" : "no-underline dark:text-[#FFF]"}`}
-                    >
-                      {t?.date?.toLocaleString().split(",")[0]}
-                    </h3>
-                    {t?.completed ? (
-                      <p className="sm:text-[10px] md:text-base">Task Completed</p>
-                    ) : (
-                      <div className="flex sm:flex-col md:items-center md:flex-row">
-                        <Button
-                          variant="edit"
-                          onClick={() => handleEditTodo(t?.id)}
-                        >
-                          <CiEdit size={30} />
-                        </Button>
-                        <Button variant='delete' onClick={() => handleDeleteTodo(t?.id)}>
-                          <MdDeleteForever size={25} />
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                );
-              })
+                      <label className="col-span-1">
+                        <input
+                          type="checkbox"
+                          checked={t?.completed}
+                          onChange={() => handleCheckedTodos(t?.id)}
+                        />
+                      </label>
+                      <h3
+                        className={`sm:text-xs md:text-base text-ellipsis sm:w-[70%] md:w-full sm:overflow-hidden md:overflow-auto ${t?.completed ? "line-through text-[#888]" : "no-underline dark:text-[#FFF]"}`}
+                      >
+                        {t?.title}
+                      </h3>
+                      <h3
+                        className={`sm:col-span-2 md:col-span-3 sm:text-xs md:text-base ${t?.completed ? "line-through text-[#888]" : "no-underline dark:text-[#FFF]"}`}
+                      >
+                        {t?.description}
+                      </h3>
+                      <h3
+                        className={`sm:text-[8px] md:w-full md:text-base ${t?.completed ? "line-through text-[#888]" : "no-underline dark:text-[#FFF]"}`}
+                      >
+                        {t?.date?.toLocaleString().split(",")[0]}
+                      </h3>
+                      {t?.completed ? (
+                        <p className="sm:text-[10px] md:text-base">
+                          Task Completed
+                        </p>
+                      ) : (
+                        <div className="flex sm:flex-col md:items-center md:flex-row">
+                          <Button
+                            variant="edit"
+                            onClick={() => handleEditTodo(t?.id)}
+                          >
+                            <CiEdit size={30} />
+                          </Button>
+                          <Button
+                            variant="delete"
+                            onClick={() => handleDeleteTodo(t?.id)}
+                          >
+                            <MdDeleteForever size={25} />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
             ) : (
               <p className="text-center mt-16 font-bold sm:text-xl md:text-3xl text-red-500">
                 🤷‍♀️ No Todos Created Yet

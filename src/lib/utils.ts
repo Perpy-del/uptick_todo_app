@@ -9,6 +9,7 @@ export function handleAddTodoDatabase({
   title,
   desc,
   date,
+  dateNotPassed,
   completed,
   getAllTodos,
   id,
@@ -16,15 +17,16 @@ export function handleAddTodoDatabase({
   title: string;
   desc: string;
   date: Date | undefined;
+  dateNotPassed?: boolean,
   completed: boolean;
   getAllTodos: () => void;
   id: string;
 }) {
   const dbPromise = indexedDB.open("TODODatabase", 1);
+  
+  if (!title && !desc && !date && !dateNotPassed) return;
 
-  if (!title || !desc || !date) return;
-
-  if (title && desc && date) {
+  if (title && desc && date && dateNotPassed) {
     dbPromise.onsuccess = () => {
       const db = dbPromise.result;
 
