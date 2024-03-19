@@ -37,6 +37,8 @@ export function useForm(getAllTodos: () => void) {
     e.preventDefault();
 
     const currDate = new Date();
+    const selectedDate = new Date(date);
+    selectedDate.setHours(0, 0, 0, 0);
     
     if (!title) {
       setTitleNotValid(true);
@@ -48,7 +50,7 @@ export function useForm(getAllTodos: () => void) {
     } else if (!date) {
       setDescNotValid(false);
       setDateNotValid(true);
-    } else if (currDate > date) {
+    } else if (selectedDate < currDate) {
       setDateNotValid(false);
       setDateNotPassed(true);
     } else {
