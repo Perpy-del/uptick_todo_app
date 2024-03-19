@@ -62,7 +62,9 @@ Vue.js).
 -   [Shadcn](https://ui.shadcn.com/docs/installation) - Beautifully designed reusable components that you can copy and paste into your application.
 
 ### Browser Storage
-- [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) - IndexedDB is a low-level API for client-side storage of significant amounts of structured data, including files/blobs.
+- [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) - IndexedDB is a low-level API for client-side storage of significant amounts of structured data, including files/blobs. This was used to store the TODO list items.
+
+- [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) - localStorage is used to save key/value pairs in the browser. This was used to store the user name.
 
 ### Challenges Faced
 - The major challenge was trying to integrate IndexedDB as the browser storage I used for the application. I love challenges and I set out to use IndexedDB as opposed to localStorage since I have never used it before and would love the experience. It was an amazing experience overall.
