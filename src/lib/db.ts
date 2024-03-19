@@ -4,7 +4,7 @@ export function createTodoCollection () {
       return;
     }
     
-    const request = indexedDB.open("TODODatabase", 1);
+    const request = indexedDB.open("TODODatabase", 2);
 
     request.onerror = (event) => {
         console.log("Error: ", event);

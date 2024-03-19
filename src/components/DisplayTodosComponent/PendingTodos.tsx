@@ -1,16 +1,17 @@
+import { useContext } from "react";
 import { TabsContent } from "../ui/tabs";
-import { useTodos } from "@/hooks/useTodos";
 import TodoListItem from "./TodoListItem";
 import { TodoInterface } from "@/interface/TodoInterface";
+import { TodoContext } from "@/Context/TodoContext";
 
 const PendingTodos = () => {
-  const { pendingTodos } = useTodos();
+  const { pendingTodos } = useContext(TodoContext);
   return (
     <TabsContent value="pending">
       {pendingTodos && pendingTodos.length > 0 ? (
         pendingTodos.map((t: TodoInterface) => {
           return (
-            <TodoListItem
+            <TodoListItem key={t?.id}
               id={t?.id}
               title={t?.title}
               description={t?.description}

@@ -1,11 +1,12 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useTodos } from "@/hooks/useTodos";
 import AllTodos from "./AllTodos";
 import PendingTodos from "./PendingTodos";
 import CompletedTodos from "./CompletedTodos";
+import { useContext } from "react";
+import { TodoContext } from "@/Context/TodoContext";
 
 const DisplayTodos = () => {
-    const {completed, pending} = useTodos();
+    const {completed, pending} = useContext(TodoContext);
 
   return (
     <div>

@@ -1,11 +1,12 @@
-import { useTodos } from "@/hooks/useTodos";
 import { TodoInterface } from "@/interface/TodoInterface";
 import { Button } from "../ui/button";
 import { CiEdit } from "react-icons/ci";
 import { MdDeleteForever } from "react-icons/md";
+import { useContext } from "react";
+import { TodoContext } from "@/Context/TodoContext";
 
 const TodoListItem = (t: TodoInterface) => {
-  const { handleCheckedTodos, handleEditTodo, handleDeleteTodo } = useTodos();
+  const { handleCheckedTodos, handleEditTodo, handleDeleteTodo } = useContext(TodoContext);
 
   return (
     <div
@@ -35,8 +36,8 @@ const TodoListItem = (t: TodoInterface) => {
         {t?.date?.toLocaleString().split(",")[0]}
       </h3>
       {t?.completed ? (
-        <div className="flex sm:flex-col md:items-center lg:flex-row">
-          <p className="sm:text-[10px] md:text-sm">Completed</p>
+        <div className="flex sm:flex-col md:items-center md:flex-row">
+          <p className="sm:text-[10px] md:text-xs lg:text-sm">Completed</p>
           <Button variant="delete" onClick={() => handleDeleteTodo(t?.id)}>
             <MdDeleteForever size={25} />
           </Button>

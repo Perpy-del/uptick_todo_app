@@ -1,16 +1,17 @@
+import { useContext } from "react";
 import { TabsContent } from "../ui/tabs";
-import { useTodos } from "@/hooks/useTodos";
 import TodoListItem from "./TodoListItem";
 import { TodoInterface } from "@/interface/TodoInterface";
+import { TodoContext } from "@/Context/TodoContext";
 
 const AllTodos = () => {
-  const { allTodosData } = useTodos();
+  const {allTodosData} = useContext(TodoContext);
   return (
     <TabsContent value="all">
       {allTodosData && allTodosData.length > 0 ? (
         allTodosData.map((t: TodoInterface) => {
           return (
-            <TodoListItem
+            <TodoListItem key={t?.id}
               id={t?.id}
               title={t?.title}
               description={t?.description}

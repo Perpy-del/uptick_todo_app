@@ -8,14 +8,12 @@ import { Button } from "../ui/button";
 import { FaCalendarAlt } from "react-icons/fa";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useContext } from "react";
+import { TodoContext } from "@/Context/TodoContext";
 
-const TodoDateComponent = ({
-  date,
-  setDate,
-}: {
-  date: Date | undefined;
-  setDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
-}) => {
+const TodoDateComponent = () => {
+  const { date, setDate } = useContext(TodoContext);
+
   return (
     <label className="sm:text-lg md:text-xl">
       <h3 className="pb-2">Date:</h3>

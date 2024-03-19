@@ -9,7 +9,6 @@ export function handleAddTodoDatabase({
   title,
   desc,
   date,
-  dateNotPassed,
   completed,
   getAllTodos,
   id,
@@ -17,16 +16,15 @@ export function handleAddTodoDatabase({
   title: string;
   desc: string;
   date: Date | undefined;
-  dateNotPassed?: boolean,
   completed: boolean;
   getAllTodos: () => void;
   id: string;
 }) {
-  const dbPromise = indexedDB.open("TODODatabase", 1);
+  const dbPromise = indexedDB.open("TODODatabase", 2);
   
-  if (!title && !desc && !date && !dateNotPassed) return;
+  // if (!title && !desc && !date) return;
 
-  if (title && desc && date && dateNotPassed) {
+  if (title && desc && date) {
     dbPromise.onsuccess = () => {
       const db = dbPromise.result;
 
@@ -59,7 +57,7 @@ export function handleAddTodoDatabase({
 }
 
 export function handleUpdateTodoDatabase(id: string) {
-  const dbPromise = indexedDB.open("TODODatabase", 1);
+  const dbPromise = indexedDB.open("TODODatabase", 2);
 
   dbPromise.onsuccess = () => {
     const db = dbPromise.result;
@@ -105,7 +103,7 @@ export function handleEditTodoDatabase({
   date: Date | undefined;
   getAllTodos: () => void;
 }) {
-  const dbPromise = indexedDB.open("TODODatabase", 1);
+  const dbPromise = indexedDB.open("TODODatabase", 2);
 
   dbPromise.onsuccess = () => {
     const db = dbPromise.result;
@@ -150,7 +148,7 @@ export function handleDeleteTodoDatabase({
   id: string;
   getAllTodos: () => void;
 }) {
-  const dbPromise = indexedDB.open("TODODatabase", 1);
+  const dbPromise = indexedDB.open("TODODatabase", 2);
 
   dbPromise.onsuccess = () => {
     const db = dbPromise.result;

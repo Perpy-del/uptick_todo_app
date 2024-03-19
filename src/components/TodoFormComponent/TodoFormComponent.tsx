@@ -2,21 +2,19 @@ import TodoTitleComponent from "./TodoTitleComponent";
 import TodoDescComponent from "./TodoDescComponent";
 import TodoDateComponent from "./TodoDateComponent";
 import { Button } from "../ui/button";
-import { useForm } from "@/hooks/useForm";
-import { useTodos } from "@/hooks/useTodos";
+import { useContext } from "react";
+import { TodoContext } from "@/Context/TodoContext";
 
 const TodoFormComponent = () => {
-
-  const {getAllTodos} = useTodos();
-  const {title, desc, date,edit, setDate, inputTitleRef, handleSubmit, handleTitleChange, handleDescChange, titleNotValid, descNotValid, dateNotValid, dateNotPassed} = useForm(getAllTodos);
+  const { edit, handleSubmit, titleNotValid, descNotValid, dateNotValid, dateHasPassed} = useContext(TodoContext);
 
   return (
     <form onSubmit={handleSubmit}>
       <h3 className="font-bold pb-3 text-[#888]">What do you have planned?</h3>
       <div className="flex sm:flex-col md:flex-row gap-10 pb-10">
-        <TodoTitleComponent title={title} onTitleChange={handleTitleChange} inputTitleRef={inputTitleRef} />
-        <TodoDescComponent desc={desc} onDescChange={handleDescChange} />
-        <TodoDateComponent date={date} setDate={setDate} />
+        <TodoTitleComponent />
+        <TodoDescComponent />
+        <TodoDateComponent />
       </div>
       {titleNotValid && (
         <p className="text-red-700 text-lg text-center pb-5 font-bold">The title field cannot be empty</p>
@@ -27,7 +25,7 @@ const TodoFormComponent = () => {
       {dateNotValid && (
         <p className="text-red-700 text-lg text-center pb-5 font-bold">Please input a valid date.</p>
       )}
-      {dateNotPassed && (
+      {dateHasPassed && (
         <p className="text-red-700 text-lg text-center pb-5 font-bold">
           The selected date is not current. Please enter a current date
         </p>
