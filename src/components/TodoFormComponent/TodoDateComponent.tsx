@@ -8,11 +8,10 @@ import { Button } from "../ui/button";
 import { FaCalendarAlt } from "react-icons/fa";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useContext } from "react";
-import { TodoContext } from "@/Context/TodoContext";
+import { useTodos } from "@/hooks/useTodos";
 
 const TodoDateComponent = () => {
-  const { date, setDate } = useContext(TodoContext);
+  const { date, setDate } = useTodos();
 
   return (
     <label className="sm:text-lg md:text-xl">

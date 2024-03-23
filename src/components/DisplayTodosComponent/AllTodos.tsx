@@ -1,11 +1,10 @@
-import { useContext } from "react";
 import { TabsContent } from "../ui/tabs";
 import TodoListItem from "./TodoListItem";
 import { TodoInterface } from "@/interface/TodoInterface";
-import { TodoContext } from "@/Context/TodoContext";
+import { useTodos } from "@/hooks/useTodos";
 
 const AllTodos = () => {
-  const {allTodosData} = useContext(TodoContext);
+  const {allTodosData} = useTodos();
   return (
     <TabsContent value="all">
       {allTodosData && allTodosData.length > 0 ? (

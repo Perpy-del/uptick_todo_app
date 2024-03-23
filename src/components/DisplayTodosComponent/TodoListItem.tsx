@@ -2,11 +2,10 @@ import { TodoInterface } from "@/interface/TodoInterface";
 import { Button } from "../ui/button";
 import { CiEdit } from "react-icons/ci";
 import { MdDeleteForever } from "react-icons/md";
-import { useContext } from "react";
-import { TodoContext } from "@/Context/TodoContext";
+import { useTodos } from "@/hooks/useTodos";
 
 const TodoListItem = (t: TodoInterface) => {
-  const { handleCheckedTodos, handleEditTodo, handleDeleteTodo } = useContext(TodoContext);
+  const { handleCheckedTodos, handleEditTodo, handleDeleteTodo } = useTodos();
 
   return (
     <div

@@ -1,8 +1,7 @@
-import { TodoContext } from "@/Context/TodoContext";
-import { useContext } from "react";
+import { useTodos } from "@/hooks/useTodos";
 
 const TodoDescComponent = () => {
-  const { desc, handleDescChange } = useContext(TodoContext);
+  const { desc, handleDescChange } = useTodos();
 
   return (
     <label className="sm:text-lg md:text-xl w-full">

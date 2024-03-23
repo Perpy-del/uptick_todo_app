@@ -1,8 +1,7 @@
-import { TodoContext } from "@/Context/TodoContext";
-import { useContext } from "react";
+import { useTodos } from "@/hooks/useTodos";
 
 const TodoTitleComponent = () => {
-  const {title, handleTitleChange, inputTitleRef} = useContext(TodoContext);
+  const {title, handleTitleChange, inputTitleRef} = useTodos();
 
   return (
     <label className="sm:text-lg md:text-xl sm:w-full md:w-[70%]">

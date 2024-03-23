@@ -2,11 +2,10 @@ import TodoTitleComponent from "./TodoTitleComponent";
 import TodoDescComponent from "./TodoDescComponent";
 import TodoDateComponent from "./TodoDateComponent";
 import { Button } from "../ui/button";
-import { useContext } from "react";
-import { TodoContext } from "@/Context/TodoContext";
+import { useTodos } from "@/hooks/useTodos";
 
 const TodoFormComponent = () => {
-  const { edit, handleSubmit, titleNotValid, descNotValid, dateNotValid, dateHasPassed} = useContext(TodoContext);
+  const { edit, handleSubmit, titleNotValid, descNotValid, dateNotValid, dateHasPassed} = useTodos();
 
   return (
     <form onSubmit={handleSubmit}>
